@@ -18,6 +18,7 @@ body {
   position: absolute;
 }
 
+/*this gets our default font from the os*/
 body, input {
   font: menu;
 }
