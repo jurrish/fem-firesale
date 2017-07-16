@@ -3,6 +3,7 @@ const { remote, ipcRenderer } = require('electron');
 //import everything from our main process
 //we could destructure here if we wanted to get different methods from mainProcess
 const mainProcess = remote.require('./main');
+const currentWindow = remote.getCurrentWindow();
 
 const markdownView = document.querySelector('#markdown');
 const htmlView = document.querySelector('#html');
@@ -20,12 +21,19 @@ const renderMarkdownToHtml = (markdown) => {
 
 markdownView.addEventListener('keyup', (event) => {
   renderMarkdownToHtml(event.target.value);
+  //on keyup, if our currentWindow was edited, we get visual cue
+  currentWindow.setDocumentEdited(true);
+});
+
+newFileButton.addEventListener('click', () => {
+  mainProcess.createWindow();
 });
 
 //use remote module to communicate between main and renderer
-//we can getFileFromUserSelection now, even though it's a main process!
+//we can openFile now, even though it's a main process!
 openFileButton.addEventListener('click', () => {
-  mainProcess.getFileFromUserSelection();
+  //this? or currentWindow? i think "this" would be in reference to the global window object, not necessarily the window instance being used.
+  mainProcess.openFile(currentWindow);
 });
 
 //whenever we get a message from the "file-opened" CHANNEL, (what was sent from our main process), do this stuff.
